@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
+	"github.com/gomodule/redigo/redis"
 )
 
 var (
@@ -25,7 +26,7 @@ func main() {
 	pwLength := 16
 	pw := generatePassword(pwLength, minSpecialCharacter, minNum, minUpperCase)
 	clipboard.WriteAll(pw)
-	fmt.Println(pw)
+	storePW(pw)
 }
 
 func generatePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
@@ -59,4 +60,20 @@ func generatePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) 
 		inRune[i], inRune[j] = inRune[j], inRune[i]
 	})
 	return string(inRune)
+}
+
+func storePW(pw string) {
+	conn, err := redis.Dial("tcp", "localhost:6379")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer conn.Close()
+
+	_, err = conn.Do("SET", "pwkey", pw)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("PW: " + pw)
 }
