@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/atotto/clipboard"
 )
 
 var (
@@ -22,6 +24,7 @@ func main() {
 	minUpperCase := 2
 	pwLength := 16
 	pw := generatePassword(pwLength, minSpecialCharacter, minNum, minUpperCase)
+	clipboard.WriteAll(pw)
 	fmt.Println(pw)
 }
 
