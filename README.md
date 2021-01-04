@@ -6,9 +6,9 @@ Generates a password based on configurable parameters. Combining lower/upper/spe
 It will automatically copy the generated password to your clipboard for easy pasting into pwpush. 
 
 TODO:
-- CLI Accepts gen-pw cmd
-- Stores generated password in local redis
-- Generates UUID
+- [x] CLI Accepts gen-pw cmd
+- [x] Stores generated password in local redis
+- [x] Generates UUID
 - Stores UUID as key for redis
 - Generate default TTL 
 - Accept user defined TTL
