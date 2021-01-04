@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -59,6 +60,7 @@ func generatePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) 
 	rand.Shuffle(len(inRune), func(i, j int) {
 		inRune[i], inRune[j] = inRune[j], inRune[i]
 	})
+
 	return string(inRune)
 }
 
@@ -69,6 +71,12 @@ func storePW(pw string) {
 	}
 
 	defer conn.Close()
+
+	b := make([]byte, 5)
+	rand.Read(b)
+	slug := hex.EncodeToString(b)
+
+	fmt.Println(slug)
 
 	_, err = conn.Do("SET", "pwkey", pw)
 	if err != nil {
