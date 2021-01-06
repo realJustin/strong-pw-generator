@@ -1,23 +1,30 @@
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
 
 	"github.com/atotto/clipboard"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
 )
 
 var (
+	ctx            = context.Background()
 	lowerCharSet   = "abcdedfghijklmnopqrst"
 	upperCharSet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	specialCharSet = "!@#$%&*"
 	numberSet      = "0123456789"
 	allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
 )
+
+type redisService struct {
+	client *redis.Client
+}
 
 func main() {
 	rand.Seed(time.Now().Unix())
@@ -65,12 +72,14 @@ func generatePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) 
 }
 
 func storePW(pw string) {
-	conn, err := redis.Dial("tcp", "localhost:6379")
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+		DB:   0,
+	})
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-
-	defer conn.Close()
 
 	b := make([]byte, 5)
 	rand.Read(b)
@@ -78,10 +87,10 @@ func storePW(pw string) {
 
 	fmt.Println(slug)
 
-	_, err = conn.Do("SET", "pwkey", pw)
-	if err != nil {
-		fmt.Println(err)
-	}
+	client.Set(ctx, slug, pw, 0)
 
 	fmt.Println("PW: " + pw)
+
+	redisPW := client.Get(ctx, slug)
+	fmt.Println(redisPW)
 }
