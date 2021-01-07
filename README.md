@@ -11,6 +11,6 @@ TODO:
 - [x] Generates UUID
 - [x] Stores UUID as key for redis
 - [x] Generate default TTL, 24hrs
-- [ ] Accept user defined TTL
+- [x] Accept user defined TTL
 - [ ] Research local pw push fork for storing/pushing passwords or roll my own
 - [ ] Ability to delete a key/value on demand
