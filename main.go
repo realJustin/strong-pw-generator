@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -85,12 +87,28 @@ func storePW(pw string) {
 	rand.Read(b)
 	slug := hex.EncodeToString(b)
 
-	fmt.Println(slug)
+	// user expiretime
+	userExpireTime := getArgumentTime()
+	// either 24 or i
+	expireTime := time.Hour * time.Duration(userExpireTime)
 
-	client.Set(ctx, slug, pw, 0)
+	fmt.Println(expireTime)
+
+	client.Set(ctx, slug, pw, expireTime)
 
 	fmt.Println("PW: " + pw)
 
 	redisPW := client.Get(ctx, slug)
 	fmt.Println(redisPW)
+}
+
+func getArgumentTime() int {
+	if len(os.Args) > 1 {
+		arg1 := os.Args[1]
+
+		i, _ := strconv.Atoi(arg1)
+		return i
+	}
+
+	return 24
 }
